@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kandinsky – colori, emozioni, suoni e forme</title>
+<style>
+:root {
+  --ink:#171717; --paper:#fffdf7; --focus:#005fcc;
+  --shadow:0 9px 0 #171717;
+}
+* { box-sizing:border-box; }
+html,body { margin:0; min-height:100%; }
+body {
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--ink);
+  background:linear-gradient(135deg,#fff7d5,#eef7ff);
+}
+button { font:inherit; }
+[hidden] { display:none !important; }
+
+.top {
+  text-align:center;
+  padding:24px 16px 8px;
+}
+.top h1 {
+  margin:0;
+  font-size:clamp(2.4rem,8vw,5.4rem);
+  letter-spacing:.05em;
+}
+.caa-kandinsky-placeholder { display:none; 
+  width:min(900px,94vw);
+  min-height:110px;
+  margin:18px auto 8px;
+  border:4px dashed #777;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.75);
+}
+/* Lo spazio è intenzionalmente senza testo visibile: accoglierà l'immagine CAA di Kandinsky. */
+
+.home-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(240px,1fr));
+  gap:26px;
+  max-width:1080px;
+  margin:22px auto 48px;
+  padding:0 18px;
+}
+.category {
+  border:5px solid var(--ink);
+  border-radius:28px;
+  background:#fff;
+  padding:10px;
+  min-height:275px;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .16s,box-shadow .16s;
+}
+.category:hover { transform:translateY(-4px); box-shadow:0 13px 0 var(--ink); }
+.category img { width:100%; height:255px; object-fit:contain; }
+.category:focus-visible,.action-image:focus-visible,.nav-button:focus-visible,.choice:focus-visible,.close:focus-visible {
+  outline:6px solid var(--focus); outline-offset:4px;
+}
+
+.modal {
+  position:fixed; inset:0; z-index:30;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.75); padding:18px;
+}
+.modal.open { display:flex; }
+.modal-card {
+  position:relative;
+  width:min(880px,97vw);
+  max-height:95vh;
+  overflow:auto;
+  background:white;
+  border:5px solid var(--ink);
+  border-radius:28px;
+  padding:76px 24px 26px;
+}
+.close {
+  position:absolute; right:14px; top:12px;
+  width:58px; height:58px;
+  border:4px solid var(--ink);
+  border-radius:50%;
+  background:white;
+  font-size:2.1rem; font-weight:900; cursor:pointer;
+}
+.action-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:28px;
+}
+.action-image {
+  min-height:290px;
+  border:5px solid var(--ink);
+  border-radius:24px;
+  background:white;
+  padding:8px;
+  cursor:pointer;
+  box-shadow:0 6px 0 var(--ink);
+}
+.action-image img { width:100%; height:270px; object-fit:contain; }
+
+.screen {
+  position:fixed; inset:0; z-index:40;
+  background:#fff;
+  display:none;
+}
+.screen.open { display:block; }
+.screen-bar {
+  height:74px;
+  border-bottom:4px solid var(--ink);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  padding:8px 14px;
+}
+.nav-button {
+  border:4px solid var(--ink);
+  border-radius:16px;
+  background:white;
+  padding:10px 18px;
+  font-size:1.2rem;
+  font-weight:900;
+  cursor:pointer;
+}
+.screen-content {
+  height:calc(100vh - 74px);
+  overflow:auto;
+}
+#exploreHost { width:100%; min-height:100%; background:#f7f7f7; }
+
+.cold-explore {
+  padding:24px;
+  text-align:center;
+  background:#f4f8ff;
+  min-height:100%;
+}
+.cold-explore h2 { font-size:clamp(2rem,6vw,4rem); margin:0 0 26px; }
+.cold-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:24px;
+  max-width:1050px;
+  margin:auto;
+}
+.cold-card {
+  background:white;
+  border:4px solid var(--ink);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 7px 0 var(--ink);
+}
+.swatch { height:135px; border:3px solid var(--ink); border-radius:17px; }
+.cold-name { font-size:2rem; font-weight:900; margin:14px 0; }
+.emotion-button {
+  border:0; background:white; cursor:pointer; width:100%;
+}
+.emotion-button img,.cold-card>img {
+  width:100%; max-width:240px; height:190px; object-fit:contain;
+}
+
+.test-area {
+  min-height:100%;
+  padding:24px;
+  background:#fffaf0;
+}
+.test-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:30px; max-width:1100px; margin:auto;
+}
+.test-column { display:grid; gap:17px; align-content:start; }
+.choice {
+  border:4px solid var(--ink);
+  border-radius:22px;
+  min-height:160px;
+  padding:12px;
+  background:white;
+  cursor:pointer;
+  box-shadow:0 5px 0 var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
+.choice.selected { outline:7px solid #ffbe00; outline-offset:2px; }
+.choice.matched { opacity:.38; pointer-events:none; box-shadow:none; }
+.color-square {
+  width:112px; height:112px;
+  border:3px solid var(--ink); border-radius:15px; flex:none;
+}
+.color-name { font-size:clamp(1.35rem,3vw,2rem); font-weight:900; }
+.choice img { width:100%; max-width:245px; height:145px; object-fit:contain; }
+.feedback {
+  min-height:75px;
+  text-align:center;
+  font-size:clamp(1.8rem,5vw,3rem);
+  font-weight:900;
+  margin:22px auto;
+}
+.confetti {
+  position:fixed; top:-30px; z-index:100;
+  width:13px; height:24px;
+  pointer-events:none;
+  animation:fall 3.2s linear forwards;
+}
+@keyframes fall {
+  to { transform:translateY(115vh) rotate(1000deg); opacity:.95; }
+}
+
+@media (max-width:720px) {
+  .home-grid,.action-grid,.test-grid { grid-template-columns:1fr; }
+  .category { min-height:225px; }
+  .category img { height:210px; }
+  .action-image { min-height:230px; }
+  .action-image img { height:215px; }
+  .modal-card { padding:75px 14px 20px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>KANDINSKY</h1>
+  
+</header>
+
+<main class="home-grid" aria-label="Sezioni">
+  <button class="category" data-section="warm" aria-label="Colori caldi">
+    <img src="coloricaldi(1).JPG" alt="Colori caldi">
+  </button>
+  <button class="category" data-section="non" aria-label="Non colori">
+    <img src="noncolori(1).JPG" alt="Non colori">
+  </button>
+  <button class="category" data-section="cold" aria-label="Colori freddi">
+    <img src="colorifreddi.JPG" alt="Colori freddi">
+  </button>
+  <button class="category" data-section="shapes" aria-label="Forme">
+    <img src="forme(1).JPG" alt="Forme">
+  </button>
+</main>
+
+<div id="chooser" class="modal" role="dialog" aria-modal="true" aria-label="Scegli attività">
+  <div class="modal-card">
+    <button class="close" id="closeChooser" aria-label="Chiudi">×</button>
+    <div class="action-grid">
+      <button id="exploreAction" class="action-image" aria-label="Esplorare">
+        <img src="esplorarecaa.png" alt="Esplorare">
+      </button>
+      <button id="testAction" class="action-image" aria-label="Test">
+        <img src="testcaa.png" alt="Test">
+      </button>
+    </div>
+  </div>
+</div>
+
+<section id="exploreScreen" class="screen" aria-label="Esplorazione">
+  <div class="screen-bar"><button class="nav-button" id="exploreHome">← HOME</button></div>
+  <div class="screen-content"><div id="exploreHost"></div></div>
+</section>
+
+<section id="testScreen" class="screen" aria-label="Test di abbinamento">
+  <div class="screen-bar"><button class="nav-button" id="testHome">← HOME</button></div>
+  <div class="screen-content test-area">
+    <div class="test-grid">
+      <div id="colorsColumn" class="test-column"></div>
+      <div id="emotionsColumn" class="test-column"></div>
+    </div>
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<script>
+const ORIGINAL_SECTIONS = {"warm": {"styles": "\nbody { font-family: Arial; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:32px; }\ntable { width:100%; border-collapse:collapse; background:white; }\nth, td { border:3px solid #000; padding:20px; text-align:center; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\nimg { width:120px; }\nbutton { font-size:40px; padding:10px 20px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>COLORI CALDI</h1>\n<table>\n<tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr>\n<tr>\n<td class=\"colore giallo\">GIALLO</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"giallo\" src=\"giallo tromba(3).mp3\"></audio></td>\n<td><img src=\"giallo - felicissimo(3).png\"/></td>\n</tr>\n<tr>\n<td class=\"colore arancione\">ARANCIONE</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"arancione\" src=\"arancione camapana(3).mp3\"></audio></td>\n<td><img src=\"arancione - energico(3).png\"/></td>\n</tr>\n<tr>\n<td class=\"colore rosso\">ROSSO</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"rosso\" src=\"rosso tuba(2).mp3\"></audio></td>\n<td><img src=\"rosso - eccitato(2).png\"/></td>\n</tr>\n</table>\n\n"}, "non": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>NON COLORI</h2><table><tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr><tr><td class=\"colore marrone\">MARRONE</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_marrone\" src=\"marrone contrabbasso(1)(1).mp3\"></audio></td><td><img src=\"marrone - rabbia(2).png\"/></td></tr><tr><td class=\"colore grigio\">GRIGIO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_grigio\" src=\"grigio flauto(2).mp3\"></audio></td><td><img src=\"grigio - stanco(3).png\"/></td></tr><tr><td class=\"colore nero\">NERO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_nero\" src=\"nero(1).mp3\"></audio></td><td><img src=\"nero - paura(2).png\"/></td></tr><tr><td class=\"colore bianco\">BIANCO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_bianco\" src=\"\"></audio></td><td><img src=\"bianco - stanco(3).png\"/></td></tr></table>"}, "shapes": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>FORME</h2><table><tr><th>FORMA</th><th>SUONO</th></tr><tr><td><div class=\"forma-box\">TRIANGOLO<svg viewbox=\"0 0 130 110\"><polygon fill=\"none\" points=\"65,10 115,100 15,100\" stroke=\"black\" stroke-width=\"6\"></polygon></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_triangolo\" src=\"triangolo(4).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">CERCHIO<svg viewbox=\"0 0 130 110\"><circle cx=\"65\" cy=\"55\" fill=\"none\" r=\"38\" stroke=\"black\" stroke-width=\"6\"></circle></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_cerchio\" src=\"cerchio(6).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">RAGGI<svg viewbox=\"0 0 130 110\"><line stroke=\"black\" stroke-width=\"5\" x1=\"65\" x2=\"65\" y1=\"5\" y2=\"105\"></line><line stroke=\"black\" stroke-width=\"5\" x1=\"15\" x2=\"115\" y1=\"55\" y2=\"55\"></line><line stroke=\"black\" stroke-width=\"5\" x1=\"25\" x2=\"105\" y1=\"15\" y2=\"95\"></line><line stroke=\"black\" stroke-width=\"5\" x1=\"105\" x2=\"25\" y1=\"15\" y2=\"95\"></line></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_raggi\" src=\"raggi(4).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">LINEA A ZIG ZAG<svg viewbox=\"0 0 130 110\"><polyline fill=\"none\" points=\"10,95 35,15 60,95 85,15 120,95\" stroke=\"black\" stroke-width=\"6\"></polyline></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_zigzag\" src=\"linea frastagliata(6).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">LINEA ONDULATA<svg viewbox=\"0 0 130 110\"><path d=\"M10 60 Q35 5 65 60 T120 60\" fill=\"none\" stroke=\"black\" stroke-width=\"6\"></path></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_ondulata\" src=\"linea ondulata(5).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">LINEA SPEZZATA<svg viewbox=\"0 0 130 110\"><polyline fill=\"none\" points=\"15,80 45,55 35,20 85,48 88,12 120,12\" stroke=\"black\" stroke-linecap=\"round\" stroke-linejoin=\"miter\" stroke-width=\"5\"></polyline></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_spezzata\" src=\"linea spezzata(5).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">LINEA AGGROVIGLIATA<svg viewbox=\"0 0 130 110\"><path d=\"M5 55 C25 55, 30 20, 65 55 C95 85, 120 55, 100 35 C80 15, 45 25, 45 55 C45 88, 95 88, 95 55 C95 20, 45 15, 25 45 C10 70, 45 80, 65 55 C85 30, 105 55, 125 55\" fill=\"none\" stroke=\"black\" stroke-linecap=\"round\" stroke-width=\"5\"></path></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_aggrovigliata\" src=\"linea aggrovigliata(6).mp3\"></audio></td></tr><tr><td><div class=\"forma-box\">LINEA A SPIRALE<svg viewbox=\"0 0 130 130\"><path d=\"M118 60 C118 30 95 8 66 8 C34 8 10 32 10 64 C10 98 36 122 70 122 C101 122 123 99 123 68 C123 39 101 18 72 18 C45 18 24 39 24 66 C24 92 44 111 70 111 C95 111 112 93 112 69 C112 46 94 30 72 30 C52 30 36 45 36 66 C36 85 50 99 69 99 C87 99 100 86 100 69 C100 53 88 42 72 42 C58 42 48 52 48 66 C48 79 57 88 70 88 C82 88 90 80 90 69 C90 60 82 53 73 53 C65 53 59 59 59 67 C59 74 64 79 71 79 C77 79 81 75 81 69\" fill=\"none\" stroke=\"black\" stroke-linecap=\"round\" stroke-width=\"5\"></path></svg></div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_spirale\" src=\"linea a spirale(6).mp3\"></audio></td></tr></table>"}, "cold": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n:host{display:block}\n*{box-sizing:border-box}\nbody,.root{margin:0}\ntable{max-width:1100px;margin-left:auto;margin-right:auto}\nimg{max-width:100%;height:auto;object-fit:contain}\n@media(max-width:700px){\n body{padding:10px!important}\n table,tbody,tr,th,td{display:block;width:100%}\n tr{margin-bottom:18px;border:3px solid #000;background:#fff}\n th{display:none}\n td{border-width:0 0 2px 0!important}\n td:last-child{border-bottom:0!important}\n img{width:min(220px,90vw)!important}\n}\n", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>COLORI FREDDI</h2><table><tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr><tr><td class=\"colore azzurro\">AZZURRO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_azzurro\" src=\"azzurro flauto(4).mp3\"></audio></td><td><img src=\"azzurro(4).png\"/></td></tr><tr><td class=\"colore blu\">BLU</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_blu\" src=\"blu cello(4).mp3\"></audio></td><td><img src=\"blu(3).png\"/></td></tr><tr><td class=\"colore verde\">VERDE</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_verde\" src=\"verde violino(3).mp3\"></audio></td><td><img src=\"verde(2).png\"/></td></tr><tr><td class=\"colore viola\">VIOLA</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_viola\" src=\"viola fagotto(3).mp3\"></audio></td><td><img src=\"viola(2).png\"/></td></tr></table>"}};
+
+const TESTS = {
+  warm: [
+    {id:"giallo",name:"GIALLO",color:"#ffd400",img:"giallo - felicissimo(3).png"},
+    {id:"arancione",name:"ARANCIONE",color:"#f77f00",img:"arancione - energico(3).png"},
+    {id:"rosso",name:"ROSSO",color:"#d62828",img:"rosso - eccitato(2).png"}
+  ],
+  non: [
+    {id:"marrone",name:"MARRONE",color:"#8b5a2b",img:"marrone - rabbia(2).png"},
+    {id:"grigio",name:"GRIGIO",color:"#9e9e9e",img:"grigio - stanco(3).png"},
+    {id:"nero",name:"NERO",color:"#000000",img:"nero - paura(2).png"},
+    {id:"bianco",name:"BIANCO",color:"#ffffff",img:"bianco - stanco(3).png"}
+  ],
+  cold: [
+    {id:"azzurro",name:"AZZURRO",color:"#4cc9f0",img:"azzurro(4).png"},
+    {id:"blu",name:"BLU",color:"#1d4ed8",img:"blu(3).png"},
+    {id:"verde",name:"VERDE",color:"#2ecc71",img:"verde(2).png"},
+    {id:"viola",name:"VIOLA",color:"#7b2cbf",img:"viola(2).png"}
+  ]
+};
+
+let section = null;
+let selectedColor = null;
+let selectedEmotion = null;
+let matched = 0;
+
+const chooser = document.getElementById("chooser");
+const exploreScreen = document.getElementById("exploreScreen");
+const testScreen = document.getElementById("testScreen");
+const testAction = document.getElementById("testAction");
+
+document.querySelectorAll(".category").forEach(btn => {
+  btn.addEventListener("click", () => {
+    section = btn.dataset.section;
+    testAction.hidden = section === "shapes";
+    chooser.classList.add("open");
+    document.getElementById("closeChooser").focus();
+  });
+});
+
+function closeChooser() { chooser.classList.remove("open"); }
+document.getElementById("closeChooser").addEventListener("click", closeChooser);
+chooser.addEventListener("click", e => { if (e.target === chooser) closeChooser(); });
+
+document.getElementById("exploreAction").addEventListener("click", () => {
+  closeChooser();
+  openExplore(section);
+});
+testAction.addEventListener("click", () => {
+  closeChooser();
+  buildTest(section);
+});
+
+document.getElementById("exploreHome").addEventListener("click", closeScreens);
+document.getElementById("testHome").addEventListener("click", closeScreens);
+
+function stopAllAudio(root=document) {
+  root.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime = 0; });
+  const host = document.getElementById("exploreHost");
+  if (host.shadowRoot) host.shadowRoot.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime=0; });
+}
+function closeScreens() {
+  stopAllAudio();
+  exploreScreen.classList.remove("open");
+  testScreen.classList.remove("open");
+  document.getElementById("exploreHost").replaceChildren();
+}
+
+function openExplore(key) {
+  const host = document.getElementById("exploreHost");
+  host.replaceChildren();
+
+  const data = ORIGINAL_SECTIONS[key];
+  const shell = document.createElement("div");
+  host.appendChild(shell);
+  const shadow = shell.attachShadow({mode:"open"});
+  shadow.innerHTML = `<style>${data.styles}</style><div class="root">${data.body}</div>`;
+
+  shadow.querySelectorAll(".integrated-sound-button").forEach(button => {
+    button.addEventListener("click", () => {
+      shadow.querySelectorAll("audio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
+      });
+      const cell = button.closest("td");
+      const audio = cell ? cell.querySelector("audio") : null;
+      if (audio) audio.play().catch(() => {});
+    });
+  });
+
+  exploreScreen.classList.add("open");
+  document.querySelector("#exploreScreen .screen-content").scrollTop = 0;
+}
+function shuffle(items) {
+  const a = [...items];
+  for (let i=a.length-1; i>0; i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildTest(key) {
+  selectedColor = null;
+  selectedEmotion = null;
+  matched = 0;
+
+  const colors = document.getElementById("colorsColumn");
+  const emotions = document.getElementById("emotionsColumn");
+  const feedback = document.getElementById("feedback");
+
+  colors.replaceChildren();
+  emotions.replaceChildren();
+  feedback.textContent = "";
+
+  TESTS[key].forEach(pair => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "choice";
+    button.dataset.id = pair.id;
+    button.setAttribute("aria-label", pair.name);
+
+    const square = document.createElement("span");
+    square.className = "color-square";
+    square.style.background = pair.color;
+
+    const name = document.createElement("span");
+    name.className = "color-name";
+    name.textContent = pair.name;
+
+    button.append(square, name);
+    button.addEventListener("click", () => selectChoice("color", button, pair.id));
+    colors.appendChild(button);
+  });
+
+  shuffle(TESTS[key]).forEach(pair => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "choice";
+    button.dataset.id = pair.id;
+    button.setAttribute("aria-label", "Emozione da abbinare");
+
+    const image = document.createElement("img");
+    image.src = pair.img;
+    image.alt = "Immagine CAA dell'emozione da abbinare";
+    image.loading = "eager";
+
+    button.appendChild(image);
+    button.addEventListener("click", () => selectChoice("emotion", button, pair.id));
+    emotions.appendChild(button);
+  });
+
+  testScreen.classList.add("open");
+  document.querySelector("#testScreen .screen-content").scrollTop = 0;
+}
+function selectChoice(type, element, id) {
+  const selector = type === "color" ? "#colorsColumn .choice" : "#emotionsColumn .choice";
+  document.querySelectorAll(selector).forEach(el => el.classList.remove("selected"));
+  element.classList.add("selected");
+  if (type === "color") selectedColor = {element,id};
+  else selectedEmotion = {element,id};
+  if (selectedColor && selectedEmotion) checkMatch();
+}
+
+function checkMatch() {
+  const feedback = document.getElementById("feedback");
+  if (selectedColor.id === selectedEmotion.id) {
+    selectedColor.element.classList.remove("selected");
+    selectedEmotion.element.classList.remove("selected");
+    selectedColor.element.classList.add("matched");
+    selectedEmotion.element.classList.add("matched");
+    matched++;
+    feedback.textContent = "BRAVO!";
+    if (matched === TESTS[section].length) {
+      feedback.textContent = "BRAVISSIMO!";
+      launchConfetti();
+    }
+  } else {
+    selectedColor.element.classList.remove("selected");
+    selectedEmotion.element.classList.remove("selected");
+    feedback.textContent = "RIPROVA";
+  }
+  selectedColor = null; selectedEmotion = null;
+}
+
+function launchConfetti() {
+  const colors=["#ff1744","#ffea00","#00e676","#2979ff","#d500f9","#ff9100","#00bcd4"];
+  for (let i=0; i<190; i++) {
+    const piece=document.createElement("span");
+    piece.className="confetti";
+    piece.style.left=(Math.random()*100)+"vw";
+    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay=(Math.random()*.9)+"s";
+    piece.style.animationDuration=(2.6+Math.random()*1.4)+"s";
+    piece.style.borderRadius=Math.random()>.5?"50%":"2px";
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(),4500);
+  }
+}
+</script>
+</body>
+</html>
