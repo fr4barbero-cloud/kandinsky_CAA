@@ -3,478 +3,136 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kandinsky – colori, emozioni, suoni e forme</title>
+<title>Kandinsky – colori, suoni, emozioni e forme</title>
 <style>
-:root {
-  --ink:#171717; --paper:#fffdf7; --focus:#005fcc;
-  --shadow:0 9px 0 #171717;
-}
-* { box-sizing:border-box; }
-html,body { margin:0; min-height:100%; }
-body {
-  font-family:Arial, Helvetica, sans-serif;
-  color:var(--ink);
-  background:linear-gradient(135deg,#fff7d5,#eef7ff);
-}
-button { font:inherit; }
-[hidden] { display:none !important; }
-
-.top {
-  text-align:center;
-  padding:24px 16px 8px;
-}
-.top h1 {
-  margin:0;
-  font-size:clamp(2.4rem,8vw,5.4rem);
-  letter-spacing:.05em;
-}
-.caa-kandinsky-placeholder { display:none; 
-  width:min(900px,94vw);
-  min-height:110px;
-  margin:18px auto 8px;
-  border:4px dashed #777;
-  border-radius:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.75);
-}
-/* Lo spazio è intenzionalmente senza testo visibile: accoglierà l'immagine CAA di Kandinsky. */
-
-.home-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(240px,1fr));
-  gap:26px;
-  max-width:1080px;
-  margin:22px auto 48px;
-  padding:0 18px;
-}
-.category {
-  border:5px solid var(--ink);
-  border-radius:28px;
-  background:#fff;
-  padding:10px;
-  min-height:275px;
-  cursor:pointer;
-  box-shadow:var(--shadow);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:transform .16s,box-shadow .16s;
-}
-.category:hover { transform:translateY(-4px); box-shadow:0 13px 0 var(--ink); }
-.category img { width:100%; height:255px; object-fit:contain; }
-.category:focus-visible,.action-image:focus-visible,.nav-button:focus-visible,.choice:focus-visible,.close:focus-visible {
-  outline:6px solid var(--focus); outline-offset:4px;
-}
-
-.modal {
-  position:fixed; inset:0; z-index:30;
-  display:none; align-items:center; justify-content:center;
-  background:rgba(0,0,0,.75); padding:18px;
-}
-.modal.open { display:flex; }
-.modal-card {
-  position:relative;
-  width:min(880px,97vw);
-  max-height:95vh;
-  overflow:auto;
-  background:white;
-  border:5px solid var(--ink);
-  border-radius:28px;
-  padding:76px 24px 26px;
-}
-.close {
-  position:absolute; right:14px; top:12px;
-  width:58px; height:58px;
-  border:4px solid var(--ink);
-  border-radius:50%;
-  background:white;
-  font-size:2.1rem; font-weight:900; cursor:pointer;
-}
-.action-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:28px;
-}
-.action-image {
-  min-height:290px;
-  border:5px solid var(--ink);
-  border-radius:24px;
-  background:white;
-  padding:8px;
-  cursor:pointer;
-  box-shadow:0 6px 0 var(--ink);
-}
-.action-image img { width:100%; height:270px; object-fit:contain; }
-
-.screen {
-  position:fixed; inset:0; z-index:40;
-  background:#fff;
-  display:none;
-}
-.screen.open { display:block; }
-.screen-bar {
-  height:74px;
-  border-bottom:4px solid var(--ink);
-  background:#fff;
-  display:flex;
-  align-items:center;
-  padding:8px 14px;
-}
-.nav-button {
-  border:4px solid var(--ink);
-  border-radius:16px;
-  background:white;
-  padding:10px 18px;
-  font-size:1.2rem;
-  font-weight:900;
-  cursor:pointer;
-}
-.screen-content {
-  height:calc(100vh - 74px);
-  overflow:auto;
-}
-#exploreHost { width:100%; min-height:100%; background:#f7f7f7; }
-
-.cold-explore {
-  padding:24px;
-  text-align:center;
-  background:#f4f8ff;
-  min-height:100%;
-}
-.cold-explore h2 { font-size:clamp(2rem,6vw,4rem); margin:0 0 26px; }
-.cold-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:24px;
-  max-width:1050px;
-  margin:auto;
-}
-.cold-card {
-  background:white;
-  border:4px solid var(--ink);
-  border-radius:24px;
-  padding:18px;
-  box-shadow:0 7px 0 var(--ink);
-}
-.swatch { height:135px; border:3px solid var(--ink); border-radius:17px; }
-.cold-name { font-size:2rem; font-weight:900; margin:14px 0; }
-.emotion-button {
-  border:0; background:white; cursor:pointer; width:100%;
-}
-.emotion-button img,.cold-card>img {
-  width:100%; max-width:240px; height:190px; object-fit:contain;
-}
-
-.test-area {
-  min-height:100%;
-  padding:24px;
-  background:#fffaf0;
-}
-.test-grid {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:30px; max-width:1100px; margin:auto;
-}
-.test-column { display:grid; gap:17px; align-content:start; }
-.choice {
-  border:4px solid var(--ink);
-  border-radius:22px;
-  min-height:160px;
-  padding:12px;
-  background:white;
-  cursor:pointer;
-  box-shadow:0 5px 0 var(--ink);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:18px;
-}
-.choice.selected { outline:7px solid #ffbe00; outline-offset:2px; }
-.choice.matched { opacity:.38; pointer-events:none; box-shadow:none; }
-.color-square {
-  width:112px; height:112px;
-  border:3px solid var(--ink); border-radius:15px; flex:none;
-}
-.color-name { font-size:clamp(1.35rem,3vw,2rem); font-weight:900; }
-.choice img { width:100%; max-width:245px; height:145px; object-fit:contain; }
-.feedback {
-  min-height:75px;
-  text-align:center;
-  font-size:clamp(1.8rem,5vw,3rem);
-  font-weight:900;
-  margin:22px auto;
-}
-.confetti {
-  position:fixed; top:-30px; z-index:100;
-  width:13px; height:24px;
-  pointer-events:none;
-  animation:fall 3.2s linear forwards;
-}
-@keyframes fall {
-  to { transform:translateY(115vh) rotate(1000deg); opacity:.95; }
-}
-
-@media (max-width:720px) {
-  .home-grid,.action-grid,.test-grid { grid-template-columns:1fr; }
-  .category { min-height:225px; }
-  .category img { height:210px; }
-  .action-image { min-height:230px; }
-  .action-image img { height:215px; }
-  .modal-card { padding:75px 14px 20px; }
-}
+:root{--ink:#171717;--bg:#fff8df;--focus:#005fcc}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#fff4cb,#eaf6ff);color:var(--ink);min-height:100vh}
+button{font:inherit}
+header{text-align:center;padding:24px 15px 8px}
+h1{font-size:clamp(2.6rem,8vw,5.2rem);margin:0;letter-spacing:.05em}
+.home-grid{display:grid;grid-template-columns:repeat(2,minmax(230px,1fr));gap:26px;max-width:1080px;margin:24px auto 50px;padding:0 18px}
+.category,.action,.choice,.sound-btn{border:5px solid #111;border-radius:24px;background:#fff;cursor:pointer;box-shadow:0 7px 0 #111}
+.category{padding:10px;min-height:270px}
+.category img{width:100%;height:250px;object-fit:contain}
+.category:focus-visible,.action:focus-visible,.choice:focus-visible,.sound-btn:focus-visible,.close:focus-visible,.home:focus-visible{outline:6px solid var(--focus);outline-offset:4px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:30;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex}
+.modal-card{position:relative;width:min(900px,97vw);background:#fff;border:5px solid #111;border-radius:28px;padding:75px 22px 25px}
+.close{position:absolute;right:12px;top:10px;width:58px;height:58px;border:4px solid #111;border-radius:50%;background:#fff;font-size:2rem;font-weight:900;cursor:pointer}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.action{padding:8px;min-height:270px}
+.action img{width:100%;height:250px;object-fit:contain}
+.screen{display:none;position:fixed;inset:0;background:#fff;z-index:40}
+.screen.open{display:block}
+.bar{height:72px;border-bottom:4px solid #111;display:flex;align-items:center;padding:8px 14px;background:#fff}
+.home{border:4px solid #111;border-radius:15px;background:#fff;padding:10px 18px;font-weight:900;cursor:pointer}
+.content{height:calc(100vh - 72px);overflow:auto;padding:22px;background:#f7f7f7}
+h2{text-align:center;font-size:clamp(2rem,6vw,4rem);margin:0 0 24px}
+.activity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px;max-width:1100px;margin:auto}
+.card{background:#fff;border:4px solid #111;border-radius:24px;padding:16px;text-align:center;box-shadow:0 6px 0 #111}
+.swatch{height:120px;border:3px solid #111;border-radius:15px}
+.name{font-size:1.8rem;font-weight:900;margin:12px 0}
+.sound-btn{padding:10px;margin-bottom:12px;min-width:80px;font-size:2rem}
+.card img{width:100%;max-width:230px;height:180px;object-fit:contain}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1100px;margin:auto}
+.test-column{display:grid;gap:16px}
+.choice{min-height:155px;padding:12px;display:flex;align-items:center;justify-content:center;gap:18px}
+.choice.selected{outline:7px solid #ffbe00;outline-offset:2px}
+.choice.matched{opacity:.4;pointer-events:none;box-shadow:none}
+.square{width:105px;height:105px;border:3px solid #111;border-radius:14px;flex:none}
+.choice img{width:100%;max-width:240px;height:140px;object-fit:contain}
+.feedback{text-align:center;min-height:70px;font-size:clamp(1.8rem,5vw,3rem);font-weight:900;margin:22px}
+.confetti{position:fixed;top:-25px;width:13px;height:23px;z-index:100;pointer-events:none;animation:fall 3.2s linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(1000deg);opacity:.95}}
+@media(max-width:720px){.home-grid,.action-grid,.test-grid{grid-template-columns:1fr}.category img{height:210px}.action img{height:210px}}
 </style>
 </head>
 <body>
-<header class="top">
-  <h1>KANDINSKY</h1>
-  
-</header>
+<header><h1>KANDINSKY</h1></header>
 
-<main class="home-grid" aria-label="Sezioni">
-  <button class="category" data-section="warm" aria-label="Colori caldi">
-    <img src="coloricaldi(1).JPG" alt="Colori caldi">
-  </button>
-  <button class="category" data-section="non" aria-label="Non colori">
-    <img src="noncolori(1).JPG" alt="Non colori">
-  </button>
-  <button class="category" data-section="cold" aria-label="Colori freddi">
-    <img src="colorifreddi.JPG" alt="Colori freddi">
-  </button>
-  <button class="category" data-section="shapes" aria-label="Forme">
-    <img src="forme(1).JPG" alt="Forme">
-  </button>
+<main class="home-grid">
+<button class="category" data-section="warm" aria-label="Colori caldi"><img src="coloricaldi.JPG" alt="Colori caldi"></button>
+<button class="category" data-section="non" aria-label="Non colori"><img src="noncolori.JPG" alt="Non colori"></button>
+<button class="category" data-section="cold" aria-label="Colori freddi"><img src="colorifreddi.JPG" alt="Colori freddi"></button>
+<button class="category" data-section="shapes" aria-label="Forme"><img src="forme.JPG" alt="Forme"></button>
 </main>
 
 <div id="chooser" class="modal" role="dialog" aria-modal="true" aria-label="Scegli attività">
-  <div class="modal-card">
-    <button class="close" id="closeChooser" aria-label="Chiudi">×</button>
-    <div class="action-grid">
-      <button id="exploreAction" class="action-image" aria-label="Esplorare">
-        <img src="esplorarecaa.png" alt="Esplorare">
-      </button>
-      <button id="testAction" class="action-image" aria-label="Test">
-        <img src="testcaa.png" alt="Test">
-      </button>
-    </div>
-  </div>
+<div class="modal-card">
+<button id="closeChooser" class="close" aria-label="Chiudi">×</button>
+<div class="action-grid">
+<button id="exploreAction" class="action" aria-label="Esplorare"><img src="esplorarecaa.png" alt="Esplorare"></button>
+<button id="testAction" class="action" aria-label="Test"><img src="testcaa.png" alt="Test"></button>
+</div>
+</div>
 </div>
 
-<section id="exploreScreen" class="screen" aria-label="Esplorazione">
-  <div class="screen-bar"><button class="nav-button" id="exploreHome">← HOME</button></div>
-  <div class="screen-content"><div id="exploreHost"></div></div>
+<section id="exploreScreen" class="screen">
+<div class="bar"><button class="home" data-home>← HOME</button></div>
+<div id="exploreContent" class="content"></div>
 </section>
 
-<section id="testScreen" class="screen" aria-label="Test di abbinamento">
-  <div class="screen-bar"><button class="nav-button" id="testHome">← HOME</button></div>
-  <div class="screen-content test-area">
-    <div class="test-grid">
-      <div id="colorsColumn" class="test-column"></div>
-      <div id="emotionsColumn" class="test-column"></div>
-    </div>
-    <div id="feedback" class="feedback" aria-live="polite"></div>
-  </div>
+<section id="testScreen" class="screen">
+<div class="bar"><button class="home" data-home>← HOME</button></div>
+<div class="content">
+<div class="test-grid"><div id="colorsColumn" class="test-column"></div><div id="emotionsColumn" class="test-column"></div></div>
+<div id="feedback" class="feedback" aria-live="polite"></div>
+</div>
 </section>
 
 <script>
-const ORIGINAL_SECTIONS = {"warm": {"styles": "\nbody { font-family: Arial; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:32px; }\ntable { width:100%; border-collapse:collapse; background:white; }\nth, td { border:3px solid #000; padding:20px; text-align:center; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\nimg { width:120px; }\nbutton { font-size:40px; padding:10px 20px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>COLORI CALDI</h1>\n<table>\n<tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr>\n<tr>\n<td class=\"colore giallo\">GIALLO</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"giallo\" src=\"giallo tromba(3).mp3\"></audio></td>\n<td><img src=\"giallo - felicissimo(3).png\"/></td>\n</tr>\n<tr>\n<td class=\"colore arancione\">ARANCIONE</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"arancione\" src=\"arancione camapana(3).mp3\"></audio></td>\n<td><img src=\"arancione - energico(3).png\"/></td>\n</tr>\n<tr>\n<td class=\"colore rosso\">ROSSO</td>\n<td><button class=\"integrated-sound-button\">♪</button>\n<audio id=\"rosso\" src=\"rosso tuba(2).mp3\"></audio></td>\n<td><img src=\"rosso - eccitato(2).png\"/></td>\n</tr>\n</table>\n\n"}, "non": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>NON COLORI</h2><table><tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr><tr><td class=\"colore marrone\">MARRONE</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_marrone\" src=\"marrone contrabbasso(1)(1).mp3\"></audio></td><td><img src=\"marrone - rabbia(2).png\"/></td></tr><tr><td class=\"colore grigio\">GRIGIO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_grigio\" src=\"grigio flauto(2).mp3\"></audio></td><td><img src=\"grigio - stanco(3).png\"/></td></tr><tr><td class=\"colore nero\">NERO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_nero\" src=\"nero(1).mp3\"></audio></td><td><img src=\"nero - paura(2).png\"/></td></tr><tr><td class=\"colore bianco\">BIANCO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_bianco\" src=\"\"></audio></td><td><img src=\"bianco - stanco(3).png\"/></td></tr></table>"}, "shapes": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n      :host { display:block; }\n      * { box-sizing:border-box; }\n      body, .root { margin:0; }\n      table { max-width:1100px; margin-left:auto; margin-right:auto; }\n      img { max-width:100%; height:auto; object-fit:contain; }\n      @media (max-width:700px) {\n        body { padding:10px !important; }\n        table, tbody, tr, th, td { display:block; width:100%; }\n        tr { margin-bottom:18px; border:3px solid #000; background:#fff; }\n        th { display:none; }\n        td { border-width:0 0 2px 0 !important; }\n        td:last-child { border-bottom:0 !important; }\n        img { width:min(220px,90vw) !important; }\n      }\n    ", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>FORME</h2>\n<table>\n<tr><th>FORMA</th><th>SUONO</th><th>IMMAGINE</th></tr>\n<tr><td><div class=\"forma-box\">TRIANGOLO</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_triangolo\" src=\"triangolo(4).mp3\"></audio></td><td><img src=\"triangolo(2).png\" alt=\"Triangolo\"/></td></tr>\n<tr><td><div class=\"forma-box\">CERCHIO</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_cerchio\" src=\"cerchio(6).mp3\"></audio></td><td><img src=\"cerchio(4).png\" alt=\"Cerchio\"/></td></tr>\n<tr><td><div class=\"forma-box\">RAGGI</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_raggi\" src=\"raggi(4).mp3\"></audio></td><td><img src=\"raggi(2).png\" alt=\"Raggi\"/></td></tr>\n<tr><td><div class=\"forma-box\">LINEA A ZIG ZAG</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_zigzag\" src=\"linea frastagliata(6).mp3\"></audio></td><td><img src=\"linea a zig zag(3).png\" alt=\"Linea a zig zag\"/></td></tr>\n<tr><td><div class=\"forma-box\">LINEA ONDULATA</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_ondulata\" src=\"linea ondulata(5).mp3\"></audio></td><td><img src=\"lineaondulata(2).png\" alt=\"Linea ondulata\"/></td></tr>\n<tr><td><div class=\"forma-box\">LINEA SPEZZATA</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_spezzata\" src=\"linea spezzata(5).mp3\"></audio></td><td><img src=\"lineaspezzata(2).png\" alt=\"Linea spezzata\"/></td></tr>\n<tr><td><div class=\"forma-box\">LINEA AGGROVIGLIATA</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_aggrovigliata\" src=\"linea aggrovigliata(6).mp3\"></audio></td><td><img src=\"lineaaggrovigliata(2).png\" alt=\"Linea aggrovigliata\"/></td></tr>\n<tr><td><div class=\"forma-box\">LINEA A SPIRALE</div></td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_spirale\" src=\"linea a spirale(6).mp3\"></audio></td><td><img src=\"spirale(2).png\" alt=\"Linea a spirale\"/></td></tr>\n</table>\n""}, "cold": {"styles": "\nbody { font-family: Arial, sans-serif; padding:20px; background:#f7f7f7; }\nh1 { text-align:center; font-size:36px; }\nh2 { text-align:center; font-size:30px; margin-top:40px; }\ntable { width:100%; border-collapse:collapse; background:white; margin-bottom:30px; }\nth, td { border:3px solid #000; padding:16px; text-align:center; vertical-align:middle; font-size:22px; }\nth { background:#eeeeee; }\n.colore { height:120px; font-weight:bold; }\n.giallo { background:#ffd400; color:#000; }\n.arancione { background:#f77f00; color:white; }\n.rosso { background:#d62828; color:white; }\n.azzurro { background:#4cc9f0; color:#000; }\n.blu { background:#1d4ed8; color:white; }\n.verde { background:#2ecc71; color:#000; }\n.viola { background:#7b2cbf; color:white; }\n.marrone { background:#8B5A2B; color:white; }\n.grigio { background:#9e9e9e; color:#000; }\n.nero { background:#000; color:white; }\n.bianco { background:#fff; color:#000; }\nbutton { font-size:40px; padding:10px 20px; border:none; border-radius:12px; background:#e6f7ff; cursor:pointer; }\nimg { width:120px; }\n.forma-box { display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:bold; }\nsvg { width:130px; height:110px; }\n\n:host{display:block}\n*{box-sizing:border-box}\nbody,.root{margin:0}\ntable{max-width:1100px;margin-left:auto;margin-right:auto}\nimg{max-width:100%;height:auto;object-fit:contain}\n@media(max-width:700px){\n body{padding:10px!important}\n table,tbody,tr,th,td{display:block;width:100%}\n tr{margin-bottom:18px;border:3px solid #000;background:#fff}\n th{display:none}\n td{border-width:0 0 2px 0!important}\n td:last-child{border-bottom:0!important}\n img{width:min(220px,90vw)!important}\n}\n", "body": "\n<h1>ATTIVITÀ KANDINSKY</h1>\n<h2>COLORI FREDDI</h2><table><tr><th>COLORE</th><th>SUONO</th><th>IMMAGINE</th></tr><tr><td class=\"colore azzurro\">AZZURRO</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_azzurro\" src=\"azzurro flauto(4).mp3\"></audio></td><td><img src=\"azzurro(4).png\"/></td></tr><tr><td class=\"colore blu\">BLU</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_blu\" src=\"blu cello(4).mp3\"></audio></td><td><img src=\"blu(3).png\"/></td></tr><tr><td class=\"colore verde\">VERDE</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_verde\" src=\"verde violino(3).mp3\"></audio></td><td><img src=\"verde(2).png\"/></td></tr><tr><td class=\"colore viola\">VIOLA</td><td><button class=\"integrated-sound-button\">♪</button><audio id=\"a_viola\" src=\"viola fagotto(3).mp3\"></audio></td><td><img src=\"viola(2).png\"/></td></tr></table>"}};
-
-const TESTS = {
-  warm: [
-    {id:"giallo",name:"GIALLO",color:"#ffd400",img:"giallo - felicissimo(3).png"},
-    {id:"arancione",name:"ARANCIONE",color:"#f77f00",img:"arancione - energico(3).png"},
-    {id:"rosso",name:"ROSSO",color:"#d62828",img:"rosso - eccitato(2).png"}
-  ],
-  non: [
-    {id:"marrone",name:"MARRONE",color:"#8b5a2b",img:"marrone - rabbia(2).png"},
-    {id:"grigio",name:"GRIGIO",color:"#9e9e9e",img:"grigio - stanco(3).png"},
-    {id:"nero",name:"NERO",color:"#000000",img:"nero - paura(2).png"},
-    {id:"bianco",name:"BIANCO",color:"#ffffff",img:"bianco - stanco(3).png"}
-  ],
-  cold: [
-    {id:"azzurro",name:"AZZURRO",color:"#4cc9f0",img:"azzurro(4).png"},
-    {id:"blu",name:"BLU",color:"#1d4ed8",img:"blu(3).png"},
-    {id:"verde",name:"VERDE",color:"#2ecc71",img:"verde(2).png"},
-    {id:"viola",name:"VIOLA",color:"#7b2cbf",img:"viola(2).png"}
-  ]
+const sections={
+warm:[
+{name:"GIALLO",color:"#ffd400",img:"giallo - felicissimo.png",audio:"giallo tromba.mp3"},
+{name:"ARANCIONE",color:"#f77f00",img:"arancione - energico.png",audio:"arancione camapana.mp3"},
+{name:"ROSSO",color:"#d62828",img:"rosso - eccitato.png",audio:"rosso tuba.mp3"}],
+non:[
+{name:"MARRONE",color:"#8b5a2b",img:"marrone - rabbia.png",audio:"marrone contrabbasso.mp3"},
+{name:"GRIGIO",color:"#9e9e9e",img:"grigio - stanco.png",audio:"grigio flauto.mp3"},
+{name:"NERO",color:"#000",img:"nero - paura.png",audio:"nero.mp3"},
+{name:"BIANCO",color:"#fff",img:"bianco - stanco.png",audio:null}],
+cold:[
+{name:"AZZURRO",color:"#4cc9f0",img:"azzurro.png",audio:"azzurro flauto.mp3"},
+{name:"BLU",color:"#1d4ed8",img:"blu.png",audio:"blu cello.mp3"},
+{name:"VERDE",color:"#2ecc71",img:"verde.png",audio:"verde violino.mp3"},
+{name:"VIOLA",color:"#7b2cbf",img:"viola.png",audio:"viola fagotto.mp3"}],
+shapes:[
+{name:"TRIANGOLO",img:"triangolo.png",audio:"triangolo.mp3"},
+{name:"CERCHIO",img:"cerchio.png",audio:"cerchio.mp3"},
+{name:"RAGGI",img:"raggi.png",audio:"raggi.mp3"},
+{name:"LINEA A ZIG ZAG",img:"linea a zig zag.png",audio:"linea frastagliata.mp3"},
+{name:"LINEA ONDULATA",img:"lineaondulata.png",audio:"linea ondulata.mp3"},
+{name:"LINEA SPEZZATA",img:"lineaspezzata.png",audio:"linea spezzata.mp3"},
+{name:"LINEA AGGROVIGLIATA",img:"lineaaggrovigliata.png",audio:"linea aggrovigliata.mp3"},
+{name:"LINEA A SPIRALE",img:"spirale.png",audio:"linea a spirale.mp3"}]
 };
-
-let section = null;
-let selectedColor = null;
-let selectedEmotion = null;
-let matched = 0;
-
-const chooser = document.getElementById("chooser");
-const exploreScreen = document.getElementById("exploreScreen");
-const testScreen = document.getElementById("testScreen");
-const testAction = document.getElementById("testAction");
-
-document.querySelectorAll(".category").forEach(btn => {
-  btn.addEventListener("click", () => {
-    section = btn.dataset.section;
-    testAction.hidden = section === "shapes";
-    chooser.classList.add("open");
-    document.getElementById("closeChooser").focus();
-  });
-});
-
-function closeChooser() { chooser.classList.remove("open"); }
-document.getElementById("closeChooser").addEventListener("click", closeChooser);
-chooser.addEventListener("click", e => { if (e.target === chooser) closeChooser(); });
-
-document.getElementById("exploreAction").addEventListener("click", () => {
-  closeChooser();
-  openExplore(section);
-});
-testAction.addEventListener("click", () => {
-  closeChooser();
-  buildTest(section);
-});
-
-document.getElementById("exploreHome").addEventListener("click", closeScreens);
-document.getElementById("testHome").addEventListener("click", closeScreens);
-
-function stopAllAudio(root=document) {
-  root.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime = 0; });
-  const host = document.getElementById("exploreHost");
-  if (host.shadowRoot) host.shadowRoot.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime=0; });
-}
-function closeScreens() {
-  stopAllAudio();
-  exploreScreen.classList.remove("open");
-  testScreen.classList.remove("open");
-  document.getElementById("exploreHost").replaceChildren();
-}
-
-function openExplore(key) {
-  const host = document.getElementById("exploreHost");
-  host.replaceChildren();
-
-  const data = ORIGINAL_SECTIONS[key];
-  const shell = document.createElement("div");
-  host.appendChild(shell);
-  const shadow = shell.attachShadow({mode:"open"});
-  shadow.innerHTML = `<style>${data.styles}</style><div class="root">${data.body}</div>`;
-
-  shadow.querySelectorAll(".integrated-sound-button").forEach(button => {
-    button.addEventListener("click", () => {
-      shadow.querySelectorAll("audio").forEach(a => {
-        a.pause();
-        a.currentTime = 0;
-      });
-      const cell = button.closest("td");
-      const audio = cell ? cell.querySelector("audio") : null;
-      if (audio) audio.play().catch(() => {});
-    });
-  });
-
-  exploreScreen.classList.add("open");
-  document.querySelector("#exploreScreen .screen-content").scrollTop = 0;
-}
-function shuffle(items) {
-  const a = [...items];
-  for (let i=a.length-1; i>0; i--) {
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-
-function buildTest(key) {
-  selectedColor = null;
-  selectedEmotion = null;
-  matched = 0;
-
-  const colors = document.getElementById("colorsColumn");
-  const emotions = document.getElementById("emotionsColumn");
-  const feedback = document.getElementById("feedback");
-
-  colors.replaceChildren();
-  emotions.replaceChildren();
-  feedback.textContent = "";
-
-  TESTS[key].forEach(pair => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "choice";
-    button.dataset.id = pair.id;
-    button.setAttribute("aria-label", pair.name);
-
-    const square = document.createElement("span");
-    square.className = "color-square";
-    square.style.background = pair.color;
-
-    const name = document.createElement("span");
-    name.className = "color-name";
-    name.textContent = pair.name;
-
-    button.append(square, name);
-    button.addEventListener("click", () => selectChoice("color", button, pair.id));
-    colors.appendChild(button);
-  });
-
-  shuffle(TESTS[key]).forEach(pair => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "choice";
-    button.dataset.id = pair.id;
-    button.setAttribute("aria-label", "Emozione da abbinare");
-
-    const image = document.createElement("img");
-    image.src = pair.img;
-    image.alt = "Immagine CAA dell'emozione da abbinare";
-    image.loading = "eager";
-
-    button.appendChild(image);
-    button.addEventListener("click", () => selectChoice("emotion", button, pair.id));
-    emotions.appendChild(button);
-  });
-
-  testScreen.classList.add("open");
-  document.querySelector("#testScreen .screen-content").scrollTop = 0;
-}
-function selectChoice(type, element, id) {
-  const selector = type === "color" ? "#colorsColumn .choice" : "#emotionsColumn .choice";
-  document.querySelectorAll(selector).forEach(el => el.classList.remove("selected"));
-  element.classList.add("selected");
-  if (type === "color") selectedColor = {element,id};
-  else selectedEmotion = {element,id};
-  if (selectedColor && selectedEmotion) checkMatch();
-}
-
-function checkMatch() {
-  const feedback = document.getElementById("feedback");
-  if (selectedColor.id === selectedEmotion.id) {
-    selectedColor.element.classList.remove("selected");
-    selectedEmotion.element.classList.remove("selected");
-    selectedColor.element.classList.add("matched");
-    selectedEmotion.element.classList.add("matched");
-    matched++;
-    feedback.textContent = "BRAVO!";
-    if (matched === TESTS[section].length) {
-      feedback.textContent = "BRAVISSIMO!";
-      launchConfetti();
-    }
-  } else {
-    selectedColor.element.classList.remove("selected");
-    selectedEmotion.element.classList.remove("selected");
-    feedback.textContent = "RIPROVA";
-  }
-  selectedColor = null; selectedEmotion = null;
-}
-
-function launchConfetti() {
-  const colors=["#ff1744","#ffea00","#00e676","#2979ff","#d500f9","#ff9100","#00bcd4"];
-  for (let i=0; i<190; i++) {
-    const piece=document.createElement("span");
-    piece.className="confetti";
-    piece.style.left=(Math.random()*100)+"vw";
-    piece.style.background=colors[Math.floor(Math.random()*colors.length)];
-    piece.style.animationDelay=(Math.random()*.9)+"s";
-    piece.style.animationDuration=(2.6+Math.random()*1.4)+"s";
-    piece.style.borderRadius=Math.random()>.5?"50%":"2px";
-    document.body.appendChild(piece);
-    setTimeout(()=>piece.remove(),4500);
-  }
-}
+let current=null,selectedColor=null,selectedEmotion=null,matched=0;
+const chooser=document.getElementById("chooser"),testAction=document.getElementById("testAction");
+document.querySelectorAll(".category").forEach(b=>b.onclick=()=>{current=b.dataset.section;testAction.hidden=current==="shapes";chooser.classList.add("open")});
+document.getElementById("closeChooser").onclick=()=>chooser.classList.remove("open");
+chooser.onclick=e=>{if(e.target===chooser)chooser.classList.remove("open")};
+document.getElementById("exploreAction").onclick=()=>{chooser.classList.remove("open");openExplore()};
+testAction.onclick=()=>{chooser.classList.remove("open");openTest()};
+document.querySelectorAll("[data-home]").forEach(b=>b.onclick=closeScreens);
+function closeScreens(){document.querySelectorAll("audio").forEach(a=>{a.pause();a.currentTime=0});document.querySelectorAll(".screen").forEach(s=>s.classList.remove("open"))}
+function openExplore(){
+const c=document.getElementById("exploreContent");c.innerHTML=`<h2>${current==="warm"?"COLORI CALDI":current==="non"?"NON COLORI":current==="cold"?"COLORI FREDDI":"FORME"}</h2><div class="activity-grid"></div>`;
+const g=c.querySelector(".activity-grid");
+sections[current].forEach(x=>{
+const card=document.createElement("article");card.className="card";
+if(x.color){const sw=document.createElement("div");sw.className="swatch";sw.style.background=x.color;card.appendChild(sw)}
+const n=document.createElement("div");n.className="name";n.textContent=x.name;card.appendChild(n);
+if(x.audio){const b=document.createElement("button");b.className="sound-btn";b.textContent="♪";b.setAttribute("aria-label","Ascolta "+x.name);const a=document.createElement("audio");a.src=x.audio;b.onclick=()=>{document.querySelectorAll("audio").forEach(z=>{z.pause();z.currentTime=0});a.play().catch(()=>{})};card.append(b,a)}
+const im=document.createElement("img");im.src=x.img;im.alt=x.name;card.appendChild(im);g.appendChild(card)});
+document.getElementById("exploreScreen").classList.add("open")}
+function openTest(){selectedColor=selectedEmotion=null;matched=0;const cc=document.getElementById("colorsColumn"),ec=document.getElementById("emotionsColumn"),f=document.getElementById("feedback");cc.innerHTML=ec.innerHTML="";f.textContent="";
+sections[current].forEach((x,i)=>{const b=document.createElement("button");b.className="choice";b.dataset.id=i;b.innerHTML=`<span class="square" style="background:${x.color}"></span><strong>${x.name}</strong>`;b.onclick=()=>select("c",b,i);cc.appendChild(b)});
+[...sections[current]].map((x,i)=>({...x,id:i})).sort(()=>Math.random()-.5).forEach(x=>{const b=document.createElement("button");b.className="choice";b.dataset.id=x.id;const im=document.createElement("img");im.src=x.img;im.alt="Emozione da abbinare";b.appendChild(im);b.onclick=()=>select("e",b,x.id);ec.appendChild(b)});
+document.getElementById("testScreen").classList.add("open")}
+function select(t,b,id){document.querySelectorAll(t==="c"?"#colorsColumn .choice":"#emotionsColumn .choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");if(t==="c")selectedColor={b,id};else selectedEmotion={b,id};if(selectedColor&&selectedEmotion)check()}
+function check(){const f=document.getElementById("feedback");if(selectedColor.id===selectedEmotion.id){selectedColor.b.classList.replace("selected","matched");selectedEmotion.b.classList.replace("selected","matched");matched++;f.textContent="BRAVO!";if(matched===sections[current].length){f.textContent="BRAVISSIMO!";confetti()}}else{selectedColor.b.classList.remove("selected");selectedEmotion.b.classList.remove("selected");f.textContent="RIPROVA"}selectedColor=selectedEmotion=null}
+function confetti(){const cs=["#ff1744","#ffea00","#00e676","#2979ff","#d500f9","#ff9100"];for(let i=0;i<180;i++){const p=document.createElement("span");p.className="confetti";p.style.left=Math.random()*100+"vw";p.style.background=cs[Math.floor(Math.random()*cs.length)];p.style.animationDelay=Math.random()*.8+"s";document.body.appendChild(p);setTimeout(()=>p.remove(),4300)}}
 </script>
 </body>
 </html>
